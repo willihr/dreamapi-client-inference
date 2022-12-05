@@ -23,11 +23,14 @@ const modelsCache = new LRU({
     }
 });
 
-const aiInferer = async (jobData) => {
+const aiInfer = async (jobData) => {
     const ckptPath = await modelsCache.fetch(jobData.model_id);
     await gpuSemaphore.runExclusive(async () => {
-        
+        await runPythonScript('python/infer.py', [
+            `--prompt=${'a dog'}`,
+            `--model_path=${ckptPath}`,
+        ]);
     });
 }
 
-module.exports = aiInferer;
+module.exports = aiInfer;

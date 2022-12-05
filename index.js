@@ -1,9 +1,9 @@
 import { Worker } from 'bullmq';
 
-import aiInferer from './workers/ai-inferer';
-import aiTrainer from './workers/train-worker';
+import aiInfer from './workers/ai-infer';
+import aiTrain from './workers/ai-train';
 
 require('dotenv').config();
 
-const inferWorker = new Worker('Infer', aiInferer);
-const trainWorker = new Worker('Train', aiTrainer);
+const inferWorker = new Worker('Infer', aiInfer);
+const trainWorker = new Worker('Train', aiTrain);
