@@ -1,9 +1,17 @@
-import { Worker } from 'bullmq';
+const { Worker } = require('bullmq');
+const Redis = require("ioredis");
 
-import aiInfer from './workers/ai-infer';
-import aiTrain from './workers/ai-train';
+const aiInfer = require('./workers/ai-infer');
+const aiTrain = require('./workers/ai-train');
 
 require('dotenv').config();
 
-const inferWorker = new Worker('Infer', aiInfer);
-const trainWorker = new Worker('Train', aiTrain);
+const connection = new Redis({
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+    password: process.env.REDIS_PASSWORD,
+    maxRetriesPerRequest: null
+});
+
+const inferWorker = new Worker('Infer', aiInfer, { connection });
+const trainWorker = new Worker('Train', aiTrain, { connection });

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const LRU = require('lru-cache');
-const { Semaphore } = 'async-mutex';
+const { Semaphore } = require('async-mutex');
 
 const downloadFromS3 = require('../utils/download-from-s3');
 
@@ -23,13 +23,19 @@ const modelsCache = new LRU({
     }
 });
 
-const aiInfer = async (jobData) => {
-    const ckptPath = await modelsCache.fetch(jobData.model_id);
+const aiInfer = async (job) => {
+    console.log('infer job', JSON.stringify(job.data));
+
+    console.log(1)
+    const ckptPath = await modelsCache.fetch(job.data.model_id);
+    console.log(2)
     await gpuSemaphore.runExclusive(async () => {
+        console.log(3)
         await runPythonScript('python/infer.py', [
             `--prompt=${'a dog'}`,
             `--model_path=${ckptPath}`,
         ]);
+        console.log(4)
     });
 }
 
