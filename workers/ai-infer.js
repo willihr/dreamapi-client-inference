@@ -7,7 +7,7 @@ const downloadFromS3 = require('../utils/download-from-s3');
 const gpuSemaphore = new Semaphore(process.env.INFER_GPU_JOBS_MAX_CONCURRENCY || 1);
 
 const modelsCache = new LRU({
-    maxSize: process.env.AI_MODEL_CACHE_MAX_MB || 10 * 1024,
+    maxSize: parseInt(process.env.AI_MODEL_CACHE_MAX_MB) || 10 * 1024,
 
     sizeCalculation: (value) => {
         return parseInt(fs.statSync(value).size / (1024 * 1024));
