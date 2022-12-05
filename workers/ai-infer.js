@@ -17,21 +17,29 @@ const modelsCache = new LRU({
         fs.unlinkSync(value);
     },
     fetchMethod: async (key) => {
+        console.log('Downloading pruned model', key);
         const objectKey = `models/${key}.ckpt`;
-        const destinationPath = `workdir/models/${key}.ckpt`;
+        const destinationPath = `workdir/ckpts/${key}.ckpt`;
         await downloadFromS3('models', objectKey, destinationPath);
         return destinationPath;
     }
 });
 
 const aiInfer = async (job) => {
-    console.log('infer job', JSON.stringify(job.data));
+    console.log('Infer job', JSON.stringify(job.data));
 
-    const ckptPath = await modelsCache.fetch(job.data.model_id);
+    const modelId = job.data.model_id;
+    const ckptPath = await modelsCache.fetch(modelId);
     await gpuSemaphore.runExclusive(async () => {
+        console.log('Extracting model', modelId);
+        await runPythonScript('python/convert_original_stable_diffusion_to_diffusers.py', [
+            `--model_path=${ckptPath}`,
+            `--checkpoint_path=workdir/models/${modelId}`,
+        ]);
+        console.log('Run inference for model', modelId);
         await runPythonScript('python/infer.py', [
             `--prompt=${'a dog'}`,
-            `--model_path=${ckptPath}`,
+            `--model_path=workdir/models/${modelId}`,
         ]);
     });
 }
