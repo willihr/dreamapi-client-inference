@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.223.0",
+    "async-mutex": "^0.4.0",
     "bullmq": "^3.3.0",
     "dotenv": "^16.0.3",
     "lru-cache": "^7.14.1"
