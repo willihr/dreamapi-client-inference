@@ -15,3 +15,6 @@ const connection = new Redis({
 
 const inferWorker = new Worker('Infer', aiInfer, { connection });
 const trainWorker = new Worker('Train', aiTrain, { connection });
+
+inferWorker.on('failed', console.error);
+trainWorker.on('failed', console.error);

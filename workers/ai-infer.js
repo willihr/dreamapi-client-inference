@@ -27,18 +27,13 @@ const modelsCache = new LRU({
 const aiInfer = async (job) => {
     console.log('infer job', JSON.stringify(job.data));
 
-    try {
-        const ckptPath = await modelsCache.fetch(job.data.model_id);
-        await gpuSemaphore.runExclusive(async () => {
-            await runPythonScript('python/infer.py', [
-                `--prompt=${'a dog'}`,
-                `--model_path=${ckptPath}`,
-            ]);
-        });
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
+    const ckptPath = await modelsCache.fetch(job.data.model_id);
+    await gpuSemaphore.runExclusive(async () => {
+        await runPythonScript('python/infer.py', [
+            `--prompt=${'a dog'}`,
+            `--model_path=${ckptPath}`,
+        ]);
+    });
 }
 
 module.exports = aiInfer;
