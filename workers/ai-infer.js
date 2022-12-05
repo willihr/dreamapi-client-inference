@@ -20,7 +20,7 @@ const modelsCache = new LRU({
         const objectKey = `models/${key}.ckpt`;
         const destinationPath = `workdir/models/${key}.ckpt`;
         await downloadFromS3('models', objectKey, destinationPath);
-        modelsCache.set(key, destinationPath);
+        return destinationPath;
     }
 });
 
