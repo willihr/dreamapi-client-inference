@@ -10,7 +10,7 @@ const modelsCache = new LRU({
     maxSize: parseInt(process.env.AI_MODEL_CACHE_MAX_MB) || 10 * 1024,
 
     sizeCalculation: (value) => {
-        return parseInt(fs.statSync(value).size / (1024 * 1024));
+        return max(parseInt(fs.statSync(value).size / (1024 * 1024)), 1);
     },
     dispose: (value) => {
         fs.unlinkSync(value);
