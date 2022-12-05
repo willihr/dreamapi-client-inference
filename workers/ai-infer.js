@@ -3,6 +3,7 @@ const LRU = require('lru-cache');
 const { Semaphore } = require('async-mutex');
 
 const downloadFromS3 = require('../utils/download-from-s3');
+const runPythonScript = require('../utils/run-python-script');
 
 const gpuSemaphore = new Semaphore(process.env.INFER_GPU_JOBS_MAX_CONCURRENCY || 1);
 
