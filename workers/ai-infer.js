@@ -10,7 +10,7 @@ const modelsCache = new LRU({
     maxSize: parseInt(process.env.AI_MODEL_CACHE_MAX_MB) || 10 * 1024,
 
     sizeCalculation: (value) => {
-        return max(parseInt(fs.statSync(value).size / (1024 * 1024)), 1);
+        return Math.max(parseInt(fs.statSync(value).size / (1024 * 1024)), 1);
     },
     dispose: (value) => {
         fs.unlinkSync(value);
@@ -26,17 +26,18 @@ const modelsCache = new LRU({
 const aiInfer = async (job) => {
     console.log('infer job', JSON.stringify(job.data));
 
-    console.log(1)
-    const ckptPath = await modelsCache.fetch(job.data.model_id);
-    console.log(2)
-    await gpuSemaphore.runExclusive(async () => {
-        console.log(3)
-        await runPythonScript('python/infer.py', [
-            `--prompt=${'a dog'}`,
-            `--model_path=${ckptPath}`,
-        ]);
-        console.log(4)
-    });
+    try {
+        const ckptPath = await modelsCache.fetch(job.data.model_id);
+        await gpuSemaphore.runExclusive(async () => {
+            await runPythonScript('python/infer.py', [
+                `--prompt=${'a dog'}`,
+                `--model_path=${ckptPath}`,
+            ]);
+        });
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
 }
 
 module.exports = aiInfer;
