@@ -33,8 +33,8 @@ const aiInfer = async (job) => {
     await gpuSemaphore.runExclusive(async () => {
         console.log('Extracting model', modelId);
         await runPythonScript('python/convert_original_stable_diffusion_to_diffusers.py', [
-            `--model_path=${ckptPath}`,
             `--checkpoint_path=workdir/models/${modelId}`,
+            `--dump_path=${ckptPath}`,
         ]);
         console.log('Run inference for model', modelId);
         await runPythonScript('python/infer.py', [
