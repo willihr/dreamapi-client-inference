@@ -1,10 +1,10 @@
 const { Worker } = require('bullmq');
 const Redis = require("ioredis");
 
+require('dotenv').config();
+
 const aiInfer = require('./workers/ai-infer');
 const aiTrain = require('./workers/ai-train');
-
-require('dotenv').config();
 
 const connection = new Redis({
     host: process.env.REDIS_HOST,
