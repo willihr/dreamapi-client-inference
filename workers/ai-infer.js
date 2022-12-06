@@ -5,7 +5,7 @@ const { Semaphore } = require('async-mutex');
 const downloadFromS3 = require('../utils/download-from-s3');
 const runPythonScript = require('../utils/run-python-script');
 
-const gpuSemaphore = new Semaphore(process.env.INFER_GPU_JOBS_MAX_CONCURRENCY || 1);
+const gpuSemaphore = new Semaphore(process.env.INFER_JOBS_MAX_GPU_CONCURRENCY || 1);
 
 const modelsCache = new LRU({
     maxSize: parseInt(process.env.AI_MODEL_CACHE_MAX_MB) || 10 * 1024,
@@ -42,6 +42,8 @@ const aiInfer = async (job) => {
             `--model_path=workdir/models/${modelId}`,
         ]);
     });
+
+    console.log('Infer job done');
 }
 
 module.exports = aiInfer;

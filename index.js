@@ -13,8 +13,14 @@ const connection = new Redis({
     maxRetriesPerRequest: null
 });
 
-const inferWorker = new Worker('Infer', aiInfer, { connection });
-const trainWorker = new Worker('Train', aiTrain, { connection });
+const inferWorker = new Worker('Infer', aiInfer, {
+    connection,
+    concurrency: process.env.INFER_JOBS_MAX_CONCURRENCY
+});
+const trainWorker = new Worker('Train', aiTrain, {
+    connection,
+    concurrency: process.env.TRAIN_JOBS_MAX_CONCURRENCY
+});
 
 inferWorker.on('failed', () => console.error('infer job failed'));
 trainWorker.on('failed', () => console.error('train job failed'));
