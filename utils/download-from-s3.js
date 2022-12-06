@@ -19,7 +19,7 @@ const downloadFromS3 = (bucket, key, downloadPath) => {
             }));
             const outputStream = fs.createWriteStream(downloadPath);
             data.Body.pipe(outputStream);
-            outputStream.on('finish', resolve());
+            outputStream.on('finish', resolve);
         } catch (e) {
             reject(e);
         }
